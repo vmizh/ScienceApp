@@ -1,0 +1,64 @@
+services:
+  scientific-postgresdbserver:
+    image: "docker.io/library/postgres:17.6"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    expose:
+      - "5432"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/postgresql/data"
+        source: "scientificapp.PostgresDbServer-data"
+        read_only: false
+    networks:
+      - "aspire"
+    ports:
+      - ${POSTGRES_PORT}
+  scientific-mongodb:
+    image: "docker.io/library/mongo:8.2"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${DB_USER}"
+      MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}"
+    expose:
+      - "27017"
+    volumes:
+      - type: "volume"
+        target: "/data/db"
+        source: "scientificapp.scientific-mongodb-data"
+        read_only: false
+    networks:
+      - "aspire"
+    ports:
+      - ${MONGO_PORT}
+  scientific-kafka:
+    image: "docker.io/confluentinc/confluent-local:8.1.0"
+    environment:
+      KAFKA_LISTENERS: "PLAINTEXT://localhost:29092,CONTROLLER://localhost:29093,PLAINTEXT_HOST://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092,PLAINTEXT_INTERNAL://localhost:9093"
+    expose:
+      - "9092"
+      - "9093"
+    networks:
+      - "aspire"
+  cache:
+    image: redis:latest
+    container_name: redis_container_test
+    environment:
+    - REDIS_PASSWORD=${DB_PASSWORD}
+    - REDIS_USER=${DB_USER}
+    - REDIS_USER_PASSWORD=${DB_PASSWORD}
+    ports:
+    - "6378:6379"
+  
+networks:
+  aspire:
+    driver: "bridge"
+volumes:
+  scientificapp.PostgresDbServer-data:
+    driver: "local"
+  scientificapp.scientific-mongodb-data:
+    driver: "local"
