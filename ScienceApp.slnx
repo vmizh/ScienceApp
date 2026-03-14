@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/DataHelper/">
+    <Project Path="DbInterfaces/DbInterfaces.csproj" Id="de0b35ee-62bb-409e-aac5-622f23f5ee7d" />
+    <Project Path="EFBaseRepository/EFBaseRepository.csproj" Id="d81c0742-17d1-4f77-b8b9-d55f30729bef" />
+    <Project Path="MongoDbBaseRepository/MongoDbBaseRepository.csproj" Id="6874f30e-d19a-4b60-ba32-db702eb2f6f9" />
+    <Project Path="RedisBaseRepository/RedisBaseRepository.csproj" Id="7e5e8bc5-2b6c-4ecd-8408-9c4400d84dc7" />
+  </Folder>
+  <Project Path="ScienceApp.Dto/ScienceApp.Dto.csproj" Id="7ec4f394-e3cc-444a-94bf-cb35f154f817" />
+  <Project Path="ScienceApp.RandomExperimentApi/ScienceApp.RandomExperimentApi.csproj" />
+  <Project Path="ScienceApp.RandomHistService/ScienceApp.RandomHistService.csproj" Id="ce50ad99-e936-4b7d-ab5d-b3eb079ecfd5" />
+</Solution>

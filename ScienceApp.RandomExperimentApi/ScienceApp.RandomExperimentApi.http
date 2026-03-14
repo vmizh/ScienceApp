@@ -1,0 +1,6 @@
+@ScienceApp.RandomExperimentApi_HostAddress = http://localhost:5577
+
+GET {{ScienceApp.RandomExperimentApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
