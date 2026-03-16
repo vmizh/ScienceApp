@@ -9,9 +9,9 @@ namespace ScientificApp.RandomHistSerice.Model;
 public class RandomExperimentSet : IEntity
 {
     public required string AppName { set; get; } = string.Empty;
-    [BsonDateTimeOptions(Kind = DateTimeKind.Local, Representation = BsonType.String)]
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public required DateTime Start { set; get; } = DateTime.Now;
-    [BsonDateTimeOptions(Kind = DateTimeKind.Local, Representation = BsonType.String)]
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public required DateTime End { set; get; } = DateTime.Now;
     public required int MinValue { set; get; }
     public required int MaxValue { set; get; } = 1000;
