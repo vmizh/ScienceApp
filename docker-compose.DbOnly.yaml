@@ -13,8 +13,7 @@ services:
         target: "/var/lib/postgresql/data"
         source: "scientificapp.PostgresDbServer-data"
         read_only: false
-    networks:
-      - "aspire"
+   
     ports:
       - ${POSTGRES_PORT}
   scientific-mongodb:
@@ -22,6 +21,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${DB_USER}"
       MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}"
+    
     expose:
       - "27017"
     volumes:
@@ -29,8 +29,6 @@ services:
         target: "/data/db"
         source: "scientificapp.scientific-mongodb-data"
         read_only: false
-    networks:
-      - "aspire"
     ports:
       - ${MONGO_PORT}
   scientific-kafka:
@@ -42,8 +40,6 @@ services:
     expose:
       - "9092"
       - "9093"
-    networks:
-      - "aspire"
   cache:
     image: redis:latest
     container_name: redis_container_test
@@ -54,9 +50,6 @@ services:
     ports:
     - "6378:6379"
   
-networks:
-  aspire:
-    driver: "bridge"
 volumes:
   scientificapp.PostgresDbServer-data:
     driver: "local"

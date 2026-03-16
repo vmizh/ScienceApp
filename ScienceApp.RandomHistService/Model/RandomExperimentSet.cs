@@ -28,8 +28,8 @@ public static class RandomExperimentSetMapExtensions
         {
             Id = model.Id,
             AppName = model.AppName,
-            Start = model.Start,
-            End = model.End,
+            Start = model.Start.ToLocalTime(),
+            End = model.End.ToLocalTime(),
             MinValue = model.MinValue,
             MaxValue = model.MaxValue,
             Result = model.Result

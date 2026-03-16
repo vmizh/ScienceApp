@@ -54,7 +54,9 @@ services:
     ports:
     - "6378:6379"
   apiservice:
-    image: "${APISERVICE_IMAGE}"
+    build: 
+     context: .
+     dockerfile: Dockerfile
     ports:
       - "${APISERVICE_PORT}"
     depends_on:

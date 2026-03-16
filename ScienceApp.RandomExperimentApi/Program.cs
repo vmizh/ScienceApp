@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Hangfire;
 using MangoDbBaseRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -5,12 +6,12 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using ScienceApp.RandomExperimentApi;
+using ScienceApp.RandomExperimentApi.EndPoints;
 using ScienceApp.RandomExperimentApi.Interfaces.ApiSettings;
 using ScientificApp.ApiService;
 using ScientificApp.RandomHistSerice.Model;
 using ScientificApp.RandomHistService;
 using ScientificApp.RandomHistService.Repositories.RandomExperimentSetRepository;
-using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,39 +37,44 @@ var configuration = cfgBuilder.Build();
 
 var appSettings = configuration.Get<AppSettings>();
 
-builder.Services.AddOpenApi();
 
 Debug.Assert(appSettings != null, nameof(appSettings) + " != null");
 BsonSerializer.RegisterSerializer(DateTimeSerializer.LocalInstance);
 Console.WriteLine($"Тест коннект - {appSettings.Database.ConnectionString}");
 
-builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(appSettings.Database.ConnectionString));
+// Add services to the container.
+builder.Services.AddSingleton<IMongoClient>(sp => { return new MongoClient(appSettings.Database.ConnectionString); });
 
 builder.ConfigureHangfireService();
 
 builder.Services.AddRandomHistServiceDependencies();
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 app.UseHttpsRedirection();
-//app.UseExceptionHandler();
 app.UseHangfireDashboard();
 app.ConfigureJobs();
+app.ConfigureRandomExperimentEndPoint();
 
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", async ([FromServices] IRandomExperimentSetRepository repository, ILogger<RandomExperimentSet> logger) =>
+app.MapGet("/test", async ([FromServices] IRandomExperimentSetRepository repository, ILogger<RandomExperimentSet> logger) =>
 {
+    // Правильно: берет время с учетом смещения
+    DateTimeOffset localTime = DateTimeOffset.Now;
+
+    // Правильно: если нужно время для базы данных (UTC)
+    DateTimeOffset utcTime = DateTimeOffset.UtcNow;
+
     await ((MongoBaseRepository<RandomExperimentSet>)repository).CreateAsync(new RandomExperimentSet
     {
         Id = Guid.NewGuid(),

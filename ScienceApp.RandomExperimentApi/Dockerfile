@@ -13,6 +13,11 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ScienceApp.RandomExperimentApi/ScienceApp.RandomExperimentApi.csproj", "ScienceApp.RandomExperimentApi/"]
+COPY ["DbInterfaces/DbInterfaces.csproj", "DbInterfaces/"]
+COPY ["ScienceApp.Dto/ScienceApp.Dto.csproj", "ScienceApp.Dto/"]
+COPY ["ScienceApp.RandomHistService/ScienceApp.RandomHistService.csproj", "ScienceApp.RandomHistService/"]
+COPY ["MongoDbBaseRepository/MongoDbBaseRepository.csproj", "MongoDbBaseRepository/"]
+COPY ["RedisBaseRepository/RedisBaseRepository.csproj", "RedisBaseRepository/"]
 RUN dotnet restore "./ScienceApp.RandomExperimentApi/ScienceApp.RandomExperimentApi.csproj"
 COPY . .
 WORKDIR "/src/ScienceApp.RandomExperimentApi"

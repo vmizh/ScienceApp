@@ -24,7 +24,6 @@ public static class HangfireService
 
         var appSettings = configuration.Get<AppSettings>();
 
-        //var mongoUrlBuilder = new MongoUrlBuilder(builder.Configuration.GetValue<string>("ConnectionStrings:MongoDb"));
         var mongoClient = new MongoClient(appSettings.Database.ConnectionString);
 
         builder.Services.AddHangfire(configuration => configuration

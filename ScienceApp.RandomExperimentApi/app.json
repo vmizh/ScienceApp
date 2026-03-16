@@ -3,7 +3,7 @@
   "MaxRetries": 3,
   "EnableLogging": true,
   "Database": {
-    "ConnectionString": "mongodb://vmizh:CbvrfFhntvrf65@localhost:27018/?authSource=admin&authMechanism=SCRAM-SHA-256",
+    "ConnectionString": "mongodb://vmizh:CbvrfFhntvrf65@host.docker.internal:27018/?authSource=admin&authMechanism=SCRAM-SHA-256",
     "CommandTimeout": 30
   },
   "MongoDBClient": "mongodb",
