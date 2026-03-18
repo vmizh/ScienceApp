@@ -1,7 +1,36 @@
-@ScienceApp.RandomExperimentApi_HostAddress = http://localhost:5577
+@ScienceApp.RandomExperimentApi_HostAddress = http://localhost:32768
 
 
-GET {{ScienceApp.RandomExperimentApi_HostAddress}}/test
+GET {{ScienceApp.RandomExperimentApi_HostAddress}}/api/api/random-experiment
 Accept: application/json
 
 ###
+
+
+GET {{ScienceApp.RandomExperimentApi_HostAddress}}/api/random-experiment/019cfb8b-41fc-73c9-8203-46b716f2ddce
+Accept: application/json
+
+###
+
+POST {{ScienceApp.RandomExperimentApi_HostAddress}}/api/random-experiment/execute
+Accept: application/json
+Content-Type: application/json
+{
+	    "AppName": "Charp ручной запуск",
+      "Count": 10,
+      "MinVal":1,
+      "MaxVal":1000,
+      "RangeValue":10
+}
+###
+
+GET {{ScienceApp.RandomExperimentApi_HostAddress}}/api/random-experiment/period?start=2026-03-17T12:00:00.000&end=2026-03-17T12:09:59.999
+Accept: application/json
+
+###
+
+PUT {{ScienceApp.RandomExperimentApi_HostAddress}}/api/random-experiment/calcaggregate?start=2026-03-17T00:00:00.000&end=2026-03-18T23:59:59.999&rangeValue=10
+Accept: application/json
+
+###
+

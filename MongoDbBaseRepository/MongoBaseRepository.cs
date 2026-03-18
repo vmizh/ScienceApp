@@ -8,7 +8,7 @@ namespace MangoDbBaseRepository;
 public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntity
 {
     private IMongoClient _client;
-    protected IMongoCollection<T> Сollection => _db.GetCollection<T>(CollectionName);
+    protected IMongoCollection<T> Collection => _db.GetCollection<T>(CollectionName);
     private readonly ILogger<MongoBaseRepository<T>> _logger;
     private  IMongoDatabase _db => _client.GetDatabase(DatabaseName);
 
@@ -27,15 +27,15 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         if (entity.Id == Guid.Empty) entity.Id = Guid.NewGuid();
         try
         {
-            await Сollection.InsertOneAsync(entity, null, cancellationToken).ConfigureAwait(false);
+            await Collection.InsertOneAsync(entity, null, cancellationToken).ConfigureAwait(false);
             _logger.LogInformation("Inserted document {Id} into {Collection}", entity.Id,
-                Сollection.CollectionNamespace.CollectionName);
+                Collection.CollectionNamespace.CollectionName);
             return entity;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error inserting document into {Collection}",
-                Сollection.CollectionNamespace.CollectionName);
+                Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -45,12 +45,12 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         try
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, id);
-            return await Сollection.Find(filter).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+            return await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting document {Id} from {Collection}", id,
-                Сollection.CollectionNamespace.CollectionName);
+                Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -59,13 +59,13 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
     {
         try
         {
-            return await Сollection.Find(Builders<T>.Filter.Empty).ToListAsync(cancellationToken)
+            return await Collection.Find(Builders<T>.Filter.Empty).ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting all documents from {Collection}",
-                Сollection.CollectionNamespace.CollectionName);
+                Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -75,11 +75,11 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         if (filter == null) throw new ArgumentNullException(nameof(filter));
         try
         {
-            return await Сollection.Find(filter).ToListAsync(cancellationToken).ConfigureAwait(false);
+            return await Collection.Find(filter).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error finding documents in {Collection}", Сollection.CollectionNamespace.CollectionName);
+            _logger.LogError(ex, "Error finding documents in {Collection}", Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -90,7 +90,7 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         try
         {
             var filter = specification.ToExpression();
-            var find = Сollection.Find(filter);
+            var find = Collection.Find(filter);
             if (specification.OrderBy != null)
             {
                 find = find.Sort(specification.OrderByDescending
@@ -107,7 +107,7 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing documents in {Collection}", Сollection.CollectionNamespace.CollectionName);
+            _logger.LogError(ex, "Error listing documents in {Collection}", Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -117,11 +117,11 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         if (specification == null) throw new ArgumentNullException(nameof(specification));
         try
         {
-            return await Сollection.CountDocumentsAsync(specification.ToExpression(), null, cancellationToken).ConfigureAwait(false);
+            return await Collection.CountDocumentsAsync(specification.ToExpression(), null, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error counting documents in {Collection}", Сollection.CollectionNamespace.CollectionName);
+            _logger.LogError(ex, "Error counting documents in {Collection}", Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -132,18 +132,18 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         try
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, entity.Id);
-            var result = await Сollection
+            var result = await Collection
                 .ReplaceOneAsync(filter, entity, new ReplaceOptions { IsUpsert = false }, cancellationToken)
                 .ConfigureAwait(false);
             var success = result.ModifiedCount > 0;
             _logger.LogInformation("Update {Id} in {Collection} success={Success}", entity.Id,
-                Сollection.CollectionNamespace.CollectionName, success);
+                Collection.CollectionNamespace.CollectionName, success);
             return success;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating document {Id} in {Collection}", entity.Id,
-                Сollection.CollectionNamespace.CollectionName);
+                Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }
@@ -153,16 +153,16 @@ public class MongoBaseRepository<T> : IBaseRepository<T> where T : class, IEntit
         try
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, id);
-            var result = await Сollection.DeleteOneAsync(filter, cancellationToken).ConfigureAwait(false);
+            var result = await Collection.DeleteOneAsync(filter, cancellationToken).ConfigureAwait(false);
             var success = result.DeletedCount > 0;
             _logger.LogInformation("Delete {Id} from {Collection} success={Success}", id,
-                Сollection.CollectionNamespace.CollectionName, success);
+                Collection.CollectionNamespace.CollectionName, success);
             return success;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting document {Id} from {Collection}", id,
-                Сollection.CollectionNamespace.CollectionName);
+                Collection.CollectionNamespace.CollectionName);
             throw;
         }
     }

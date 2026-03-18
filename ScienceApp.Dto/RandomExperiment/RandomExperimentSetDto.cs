@@ -1,4 +1,4 @@
-﻿namespace ScienceApp.Dto
+﻿namespace ScienceApp.Dto.RandomExperiment
 {
     public record RandomExperimentSetDto
     {

@@ -1,7 +1,7 @@
 ﻿using Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using ScienceApp.Dto;
+using ScienceApp.Dto.RandomExperiment;
 
 
 namespace ScientificApp.RandomHistSerice.Model;
@@ -16,6 +16,7 @@ public class RandomExperimentSet : IEntity
     public required int MinValue { set; get; }
     public required int MaxValue { set; get; } = 1000;
     public required List<int> Result { set; get; } = [];
+    public List<RangeResultItem>? CalcRange10Results { set; get; }
     [BsonId, BsonGuidRepresentation(GuidRepresentation.Standard)]
     public required Guid Id { set; get; } = Guid.NewGuid();
 }
@@ -32,7 +33,7 @@ public static class RandomExperimentSetMapExtensions
             End = model.End.ToLocalTime(),
             MinValue = model.MinValue,
             MaxValue = model.MaxValue,
-            Result = model.Result
+            Result = model.Result,
         };
     }
 

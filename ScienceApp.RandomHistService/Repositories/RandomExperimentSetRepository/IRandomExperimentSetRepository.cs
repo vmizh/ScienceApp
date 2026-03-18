@@ -1,6 +1,16 @@
-﻿namespace ScientificApp.RandomHistService.Repositories.RandomExperimentSetRepository;
+﻿using ScienceApp.Dto.RandomExperiment;
+using ScientificApp.RandomHistSerice.Model;
+
+namespace ScientificApp.RandomHistService.Repositories.RandomExperimentSetRepository;
 
 public interface IRandomExperimentSetRepository
 {
-    void CalcExperiment();
+    Task<Guid> CalcExperiment();
+    Task<Guid> CalcExperiment(SendExperimentOptionsDto opt);
+    Task<List<RandomExperimentSet>> GetRangeResults(DateTime startDate, DateTime endDate);
+
+    Task<int> CalcAggregate(DateTime start, DateTime end, int rangeValue);
+
+
+
 }

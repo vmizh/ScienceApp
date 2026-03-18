@@ -10,7 +10,7 @@ public static class RandomCalc
         //var ret = new RandomExperimentSet
         var calcRes = new List<int>();
         var start = DateTime.Now;
-        for (var i = 0; i < 10000; i++)
+        for (var i = 0; i < countCalc; i++)
         {
             calcRes.Add(random.Next(minVal,maxVal));
         }
