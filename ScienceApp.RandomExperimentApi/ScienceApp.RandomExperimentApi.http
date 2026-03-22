@@ -29,7 +29,7 @@ Accept: application/json
 
 ###
 
-PUT {{ScienceApp.RandomExperimentApi_HostAddress}}/api/random-experiment/calcaggregate?start=2026-03-17T00:00:00.000&end=2026-03-18T23:59:59.999&rangeValue=10
+PUT {{ScienceApp.RandomExperimentApi_HostAddress}}/api/random-experiment/calcaggregate?start=2026-03-15T00:00:00.000&end=2026-03-22T23:59:59.999&rangeValue=10
 Accept: application/json
 
 ###

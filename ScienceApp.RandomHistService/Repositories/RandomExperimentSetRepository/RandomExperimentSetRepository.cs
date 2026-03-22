@@ -14,18 +14,21 @@ namespace ScientificApp.RandomHistService.Repositories.RandomExperimentSetReposi
 public class RandomExperimentSetRepository : MongoBaseRepository<RandomExperimentSet>, IRandomExperimentSetRepository
 {
     private readonly string _appName = "CharpApp";
-    private readonly int _countCalc = 10000;
-    private readonly int _maxVal = 1000;
-    private readonly int _minVal = 1;
-    private readonly int _rangeValue = 10;
+    //private readonly int _countCalc = 10000;
+    //private readonly int _maxVal = 1000;
+    //private readonly int _minVal = 1;
+    //private readonly int _rangeValue = 10;
+
+    private ExperimentSettings _experimentSettings;
 
     public RandomExperimentSetRepository(IMongoClient client, IOptions<ExperimentSettings> eSettings,
         ILogger<MongoBaseRepository<RandomExperimentSet>> logger) : base(client, logger)
     {
-        _countCalc = eSettings.Value.CountCalc;
-        _minVal = eSettings.Value.MinimalValue;
-        _maxVal = eSettings.Value.MaximalValue;
-        _rangeValue = eSettings.Value.RangeValue;
+        //_countCalc = eSettings.Value.CountCalc;
+        //_minVal = eSettings.Value.MinimalValue;
+        //_maxVal = eSettings.Value.MaximalValue;
+        //_rangeValue = eSettings.Value.RangeValue;
+        _experimentSettings = eSettings.Value;
         DatabaseName = eSettings.Value.DatabaseName;
         CollectionName = eSettings.Value.CollectionName;
     }
@@ -51,8 +54,9 @@ public class RandomExperimentSetRepository : MongoBaseRepository<RandomExperimen
 
     public async Task<Guid> CalcExperiment()
     {
-        var newItem = RandomCalc.Calc(_appName, _countCalc, _minVal, _maxVal);
-        newItem.CalcRange10Results = getAggregateResult(newItem.Result, _minVal, _maxVal, 10);
+        var newItem = RandomCalc.Calc(_appName, _experimentSettings.CountCalc, _experimentSettings.MinimalValue,
+            _experimentSettings.MaximalValue);
+        newItem.CalcRange10Results = getAggregateResult(newItem.Result, newItem.MinValue, newItem.MaxValue, 10);
         var res = await CreateAsync(newItem);
         return res.Id;
     }
@@ -76,29 +80,43 @@ public class RandomExperimentSetRepository : MongoBaseRepository<RandomExperimen
         return result;
     }
 
-    public async Task<int> CalcAggregate(DateTime start, DateTime end, int rangeValue)
+    public async Task<int> CalcAggregate(DateTime start, DateTime end, int? rangeValue)
     {
+        int res = 0;
+
+        var range = rangeValue is null or 0 ? _experimentSettings.RangeValue : rangeValue.Value;
         var ids = await GetIdsForDateTimeRange(start, end);
         ids.ForEachPage(pageSize: 20, (pageItems, pageNumber) =>
         {
-            var filter = Builders<RandomExperimentSet>.Filter.In(p => p.Id, ids);
+            res += pageItems.Count;
+            var filter = Builders<RandomExperimentSet>.Filter.In(p => p.Id, pageItems);
             var listData = Collection.Find(filter).ToList();
+
+            var bulkOps =
+                (from item in listData
+                    let calcRes = getAggregateResult(item.Result, item.MinValue, item.MaxValue, range)
+                    let updFilter = Builders<RandomExperimentSet>.Filter.Eq(e => e.Id, item.Id)
+                    let upd = Builders<RandomExperimentSet>.Update.Set(_ => _.CalcRange10Results, calcRes)
+                    select new UpdateOneModel<RandomExperimentSet>(updFilter, upd))
+                .Cast<WriteModel<RandomExperimentSet>>().ToList();
+
+            Collection.BulkWrite(bulkOps, new BulkWriteOptions() { IsOrdered = false });
 
         });
 
-        var filter = Builders<RandomExperimentSet>.Filter.In(p => p.Id, ids);
-        var data1 = Collection.Find(filter).ToList();
+        //var filter = Builders<RandomExperimentSet>.Filter.In(p => p.Id, ids);
+        //var data1 = Collection.Find(filter).ToList();
 
 
-        var data = await GetRangeResults(start, end);
-        var items = data.Where(_ => _.CalcRange10Results is null).ToList();
-        var res = items.Count;
-        if (res <= 0) return res;
-        foreach (var item in items)
-        {
-            item.CalcRange10Results = getAggregateResult(item.Result, item.MinValue, item.MaxValue, _rangeValue);
-            await UpdateAsync(item);
-        }
+        //var data = await GetRangeResults(start, end);
+        //var items = data.Where(_ => _.CalcRange10Results is null).ToList();
+        //var res = items.Count;
+        //if (res <= 0) return res;
+        //foreach (var item in items)
+        //{
+        //    item.CalcRange10Results = getAggregateResult(item.Result, item.MinValue, item.MaxValue, _experimentSettings.RangeValue);
+        //    await UpdateAsync(item);
+        //}
 
         return res;
     }
