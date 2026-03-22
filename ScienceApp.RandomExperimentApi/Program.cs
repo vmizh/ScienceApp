@@ -43,7 +43,7 @@ BsonSerializer.RegisterSerializer(DateTimeSerializer.LocalInstance);
 Console.WriteLine($"Тест коннект - {appSettings.Database.ConnectionString}");
 
 // Add services to the container.
-builder.Services.AddSingleton<IMongoClient>(sp => { return new MongoClient(appSettings.Database.ConnectionString); });
+builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(appSettings.Database.ConnectionString));
 
 builder.ConfigureHangfireService();
 

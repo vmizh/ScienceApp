@@ -1,4 +1,5 @@
-﻿using MangoDbBaseRepository;
+﻿using CommonHelper.Paging;
+using MangoDbBaseRepository;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -77,6 +78,18 @@ public class RandomExperimentSetRepository : MongoBaseRepository<RandomExperimen
 
     public async Task<int> CalcAggregate(DateTime start, DateTime end, int rangeValue)
     {
+        var ids = await GetIdsForDateTimeRange(start, end);
+        ids.ForEachPage(pageSize: 20, (pageItems, pageNumber) =>
+        {
+            var filter = Builders<RandomExperimentSet>.Filter.In(p => p.Id, ids);
+            var listData = Collection.Find(filter).ToList();
+
+        });
+
+        var filter = Builders<RandomExperimentSet>.Filter.In(p => p.Id, ids);
+        var data1 = Collection.Find(filter).ToList();
+
+
         var data = await GetRangeResults(start, end);
         var items = data.Where(_ => _.CalcRange10Results is null).ToList();
         var res = items.Count;
@@ -88,5 +101,16 @@ public class RandomExperimentSetRepository : MongoBaseRepository<RandomExperimen
         }
 
         return res;
+    }
+
+    public async Task<List<Guid>> GetIdsForDateTimeRange(DateTime start, DateTime end)
+    {
+        var filter = Builders<RandomExperimentSet>.Filter.And(
+            Builders<RandomExperimentSet>.Filter.Gte(x => x.Start, start.ToLocalTime()), // >= fromDate
+            Builders<RandomExperimentSet>.Filter.Lte(x => x.Start, end.ToLocalTime()) // <= toDate
+        );
+        var q = Collection.Find(filter);
+        var result = await Collection.Find(filter).Project(_ => _.Id).ToListAsync();
+        return result;
     }
 }
