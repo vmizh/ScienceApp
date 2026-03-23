@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/ClientHelper/">
+    <Project Path="WPFCore/WPFCore.csproj" />
+  </Folder>
   <Folder Name="/DataHelper/">
     <Project Path="DbInterfaces/DbInterfaces.csproj" Id="de0b35ee-62bb-409e-aac5-622f23f5ee7d" />
     <Project Path="EFBaseRepository/EFBaseRepository.csproj" Id="d81c0742-17d1-4f77-b8b9-d55f30729bef" />
