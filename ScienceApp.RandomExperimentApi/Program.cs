@@ -62,44 +62,44 @@ app.UseHangfireDashboard();
 app.ConfigureJobs();
 app.ConfigureRandomExperimentEndPoint();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+//var summaries = new[]
+//{
+//    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+//};
 
-app.MapGet("/test", async ([FromServices] IRandomExperimentSetRepository repository, ILogger<RandomExperimentSet> logger) =>
-{
-    // Правильно: берет время с учетом смещения
-    DateTimeOffset localTime = DateTimeOffset.Now;
+//app.MapGet("/test", async ([FromServices] IRandomExperimentSetRepository repository, ILogger<RandomExperimentSet> logger) =>
+//{
+//    // Правильно: берет время с учетом смещения
+//    DateTimeOffset localTime = DateTimeOffset.Now;
 
-    // Правильно: если нужно время для базы данных (UTC)
-    DateTimeOffset utcTime = DateTimeOffset.UtcNow;
+//    // Правильно: если нужно время для базы данных (UTC)
+//    DateTimeOffset utcTime = DateTimeOffset.UtcNow;
 
-    await ((MongoBaseRepository<RandomExperimentSet>)repository).CreateAsync(new RandomExperimentSet
-    {
-        Id = Guid.NewGuid(),
-        AppName = "TestApp",
-        Start = DateTime.Now,
-        End = DateTime.Now,
-        MinValue = 0,
-        MaxValue = 1000,
-        Result = [1, 2, 3, 35, 5]
-    });
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+//    await ((MongoBaseRepository<RandomExperimentSet>)repository).CreateAsync(new RandomExperimentSet
+//    {
+//        Id = Guid.NewGuid(),
+//        AppName = "TestApp",
+//        Start = DateTime.Now,
+//        End = DateTime.Now,
+//        MinValue = 0,
+//        MaxValue = 1000,
+//        Result = [1, 2, 3, 35, 5]
+//    });
+//    var forecast = Enumerable.Range(1, 5).Select(index =>
+//        new WeatherForecast
+//        (
+//            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+//            Random.Shared.Next(-20, 55),
+//            summaries[Random.Shared.Next(summaries.Length)]
+//        ))
+//        .ToArray();
+//    return forecast;
+//})
+//.WithName("GetWeatherForecast");
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+//internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+//{
+//    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+//}

@@ -47,6 +47,7 @@ public static class HangfireService
         builder.Services.AddHangfireServer(serverOptions =>
         {
             serverOptions.ServerName = appSettings.HangfireSettings.ServerName;
+            serverOptions.StopTimeout = TimeSpan.FromSeconds(30);
         });
     }
 }
