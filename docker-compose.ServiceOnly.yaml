@@ -1,7 +1,7 @@
 services:
   apiservice:
    image: "random-experiment" 
-   container_name: my_web_container
+   container_name: random-experiment
    restart: unless-stopped
    environment:
        TZ: "Europe/Moscow"
