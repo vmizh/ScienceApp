@@ -1,6 +1,8 @@
 services:
   apiservice:
    image: "random-experiment" 
+   container_name: my_web_container
+   restart: unless-stopped
    environment:
        TZ: "Europe/Moscow"
    ports:
